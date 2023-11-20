@@ -32,16 +32,6 @@ app.use('/tebex', auth);
 app.use('/', indexRouter);
 app.use('/tebex', tebexRouter);
 
-// ✨ Error handler
-app.use((err: any, req: express.Request, res: express.Response) => {
-  logger.error(err.message);
-  logger.error(err.message);
-  res.status(500).json({
-    error: 'Internal Server Error',
-    message: err.message,
-  });
-});
-
 // ✨ Start jobs
 logger.debug('Starting jobs...');
 schedule.scheduleJob('*/1 * * * *', async () => {
