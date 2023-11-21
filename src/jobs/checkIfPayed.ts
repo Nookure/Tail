@@ -14,21 +14,26 @@ const checkIfPayed = async () => {
 
 const check = async (id: string) => {
   let basket = invoces.getPendingPayment(id);
-
-  await tebex
-    .getBasket()
-    .get(basket.ident)
-    .then((b) => {
-      b = b as BasketResponse;
-      if (b.links.payment) {
-        logger.debug(`${id} is payed!`);
-        invoces.deletePendingPayment(id);
-        sendWebhook(id, b);
-      }
-    })
-    .catch((err) => {
-      logger.error(err);
-    });
+  
+  try {
+    await tebex
+      .getBasket()
+      .get(basket.ident)
+      .then((b) => {
+        b = b as BasketResponse;
+        if (b.links.payment) {
+          logger.debug(`${id} is payed!`);
+          invoces.deletePendingPayment(id);
+          sendWebhook(id, b);
+        }
+      })
+      .catch((err) => {
+        logger.error(err);
+      });
+  } catch (err) {
+    logger.error('An error occured while checking if payed!');
+    console.error(err);
+  }
 };
 
 const sendWebhook = async (id: string, basket: BasketResponse) => {
